@@ -8,17 +8,16 @@ import { LifeAfterJapa } from '@/components/life-after-japa';
 import { HealthHub } from '@/components/health-hub';
 import { TechGadget } from '@/components/tech-gadget';
 import { SportsHub } from '@/components/sports-hub';
-import { DailyMaple } from '@/components/daily-maple';
-
-import { WorldNews } from '@/components/world-news';
-import { BookNook } from '@/components/booknook';
+import { BusinessEconomy } from '@/components/business-economy';
+import { Education } from '@/components/education';
+import { Finance } from '@/components/finance';
 import { Footer } from '@/components/footer';
-import { Continent } from '@/components/continent';
 import { 
   getLatestHeadlines,
   getEditorsPicks,
   getDailyMaple,
   getBookNook,
+  getMapleTravel,
   getPosts,
   transformPost,
   getPostsByCategory,
@@ -34,8 +33,9 @@ import {
 import { getHomepageYoastSEO, yoastToNextMetadata } from '@/lib/yoast-seo';
 import { Metadata } from 'next';
 
-// ISR: Revalidate every 10 minutes
-export const revalidate = 600;
+// ISR: Revalidate every 15 minutes (900 seconds)
+// Increased from 10 minutes to reduce backend load
+export const revalidate = 900;
 
 // Generate metadata using Yoast SEO
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const yoastData = await getHomepageYoastSEO();
     return yoastToNextMetadata(
       yoastData,
-      'The Maple Epoch - Breaking News & Latest Updates',
+      'EmyTrends - Breaking News & Latest Updates',
       'Stay informed with real-time coverage of breaking news, politics, business, technology, health, sports, and entertainment.'
     );
   } catch (error) {
@@ -54,105 +54,87 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function getHomePageData() {
   try {
-    // Fetch articles from specific categories for hero section
-    const targetCategories = ['politics', 'business', 'technology', 'news', 'sports', 'entertainment', 'japa-routes', 'life-after-japa', 'tech-gadget', 'vibes-n-cruise'];
-    const heroArticlesPromises = targetCategories.map(category => 
-      getPostsByCategory(category, 3).then(posts => posts.map(transformPost).filter(Boolean))
-    );
+    // OPTIMIZED: Sequential batched fetching to prevent overwhelming WordPress backend
+    // Reduced post limits from 20 to 10 per category
     
-    // Get Editor's Picks from WordPress (sticky posts)
-    const editorsPicksPromise = getEditorsPicks(3);
-    
-    const [
+    // Batch 1: Critical above-the-fold content (hero + headlines)
+    const [latestHeadlines, heroArticles] = await Promise.all([
+      getLatestHeadlines(5),
+      getPosts({ per_page: 9, _embed: true }).then(posts => posts.map(transformPost).filter(Boolean)),
+    ]);
+
+    // Batch 2: Primary sections
+    const [editorsPicks, businessEconomy, japaRoutes, lifeAfterJapa] = await Promise.all([
+      getEditorsPicks(6),
+      getDailyMaple(10),
+      getPostsByCategory('japa-routes', 10).then(posts => posts.map(transformPost).filter(Boolean)),
+      getPostsByCategory('life-after-japa', 10).then(posts => posts.map(transformPost).filter(Boolean)),
+    ]);
+
+    // Batch 3: Secondary sections
+    const [healthHub, techGadget, sportsHub, vibesNCruise] = await Promise.all([
+      getPostsByCategory('health', 10).then(posts => posts.map(transformPost).filter(Boolean)),
+      getPostsByCategory('tech-gadget', 10).then(posts => posts.map(transformPost).filter(Boolean)),
+      getPostsByCategory('sports', 10).then(posts => posts.map(transformPost).filter(Boolean)),
+      getPostsByCategory('vibes-n-cruise', 10).then(posts => posts.map(transformPost).filter(Boolean)),
+    ]);
+
+    // Batch 4: Education categories (lower priority)
+    const [academics, migration, examAdmission, learningCareer] = await Promise.all([
+      getAfricaNews(10),
+      getAmericasNews(10),
+      getAustraliaNews(10),
+      getAsiaNews(10),
+    ]);
+
+    // Batch 5: Remaining categories
+    const [scholarships, studentLife, canadaNews, finance] = await Promise.all([
+      getEuropeNews(10),
+      getUKNews(10),
+      getCanadaNews(10),
+      getBookNook(10),
+    ]);
+
+    return {
       latestHeadlines,
       editorsPicks,
-      dailyMaple,
+      businessEconomy,
       japaRoutes,
       lifeAfterJapa,
       healthHub,
       techGadget,
       sportsHub,
       vibesNCruise,
-      bookNook,
+      finance,
       heroArticles,
-      africaNews,
-      americasNews,
-      australiaNews,
-      asiaNews,
-      europeNews,
-      ukNews,
+      academics,
+      migration,
+      examAdmission,
+      learningCareer,
+      scholarships,
+      studentLife,
       canadaNews,
-      ...categoryArticles
-    ] = await Promise.allSettled([
-      getLatestHeadlines(3),
-      editorsPicksPromise,
-      getDailyMaple(20),
-      getPostsByCategory('japa-routes', 20).then(posts => posts.map(transformPost).filter(Boolean)),
-      getPostsByCategory('life-after-japa', 20).then(posts => posts.map(transformPost).filter(Boolean)),
-      getPostsByCategory('health', 20).then(posts => posts.map(transformPost).filter(Boolean)),
-      getPostsByCategory('tech-gadget', 20).then(posts => posts.map(transformPost).filter(Boolean)),
-      getPostsByCategory('sports', 20).then(posts => posts.map(transformPost).filter(Boolean)),
-      getPostsByCategory('vibes-n-cruise', 20).then(posts => posts.map(transformPost).filter(Boolean)),
-      getBookNook(20),
-      getPosts({ per_page: 9, _embed: true }).then(posts => posts.map(transformPost).filter(Boolean)),
-      getAfricaNews(20),
-      getAmericasNews(20),
-      getAustraliaNews(20),
-      getAsiaNews(20),
-      getEuropeNews(20),
-      getUKNews(20),
-      getCanadaNews(20),
-      ...heroArticlesPromises
-    ]);
-
-    // Combine articles from all target categories for hero section
-    const combinedHeroArticles: TransformedPost[] = [];
-    categoryArticles.forEach(result => {
-      if (result.status === 'fulfilled') {
-        combinedHeroArticles.push(...(result.value || []).filter(Boolean));
-      }
-    });
-
-    return {
-      latestHeadlines: latestHeadlines.status === 'fulfilled' ? latestHeadlines.value : [],
-      editorsPicks: editorsPicks.status === 'fulfilled' ? editorsPicks.value : [],
-      dailyMaple: dailyMaple.status === 'fulfilled' ? dailyMaple.value : [],
-      japaRoutes: japaRoutes.status === 'fulfilled' ? japaRoutes.value : [],
-      lifeAfterJapa: lifeAfterJapa.status === 'fulfilled' ? lifeAfterJapa.value : [],
-      healthHub: healthHub.status === 'fulfilled' ? healthHub.value : [],
-      techGadget: techGadget.status === 'fulfilled' ? techGadget.value : [],
-      sportsHub: sportsHub.status === 'fulfilled' ? sportsHub.value : [],
-      vibesNCruise: vibesNCruise.status === 'fulfilled' ? vibesNCruise.value : [],
-      bookNook: bookNook.status === 'fulfilled' ? bookNook.value : [],
-      heroArticles: combinedHeroArticles.length > 0 ? combinedHeroArticles : (heroArticles.status === 'fulfilled' ? (heroArticles.value || []) : []),
-      africaNews: africaNews.status === 'fulfilled' ? africaNews.value : [],
-      americasNews: americasNews.status === 'fulfilled' ? americasNews.value : [],
-      australiaNews: australiaNews.status === 'fulfilled' ? australiaNews.value : [],
-      asiaNews: asiaNews.status === 'fulfilled' ? asiaNews.value : [],
-      europeNews: europeNews.status === 'fulfilled' ? europeNews.value : [],
-      ukNews: ukNews.status === 'fulfilled' ? ukNews.value : [],
-      canadaNews: canadaNews.status === 'fulfilled' ? canadaNews.value : [],
     };
   } catch (error) {
     console.error('Error fetching homepage data:', error);
     return {
       latestHeadlines: [],
       editorsPicks: [],
-      dailyMaple: [],
+      businessEconomy: [],
       japaRoutes: [],
       lifeAfterJapa: [],
       healthHub: [],
       techGadget: [],
       sportsHub: [],
       vibesNCruise: [],
-      bookNook: [],
+      finance: [],
       heroArticles: [],
-      africaNews: [],
-      americasNews: [],
-      australiaNews: [],
-      asiaNews: [],
-      europeNews: [],
-      ukNews: [],
+      academics: [],
+      migration: [],
+      examAdmission: [],
+      learningCareer: [],
+      scholarships: [],
+      studentLife: [],
       canadaNews: [],
     };
   }
@@ -168,20 +150,20 @@ export default async function Home() {
         <HeroSection articles={data.heroArticles} />
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-12">
-            <WorldNews 
-              africaArticle={Array.isArray(data.africaNews) ? data.africaNews[0] || null : data.africaNews}
-              americasArticle={Array.isArray(data.americasNews) ? data.americasNews[0] || null : data.americasNews}
-              australiaArticle={Array.isArray(data.australiaNews) ? data.australiaNews[0] || null : data.australiaNews}
-              asiaArticle={Array.isArray(data.asiaNews) ? data.asiaNews[0] || null : data.asiaNews}
-              europeArticle={Array.isArray(data.europeNews) ? data.europeNews[0] || null : data.europeNews}
-              ukArticle={Array.isArray(data.ukNews) ? data.ukNews[0] || null : data.ukNews}
+            <Education 
+              africaArticle={Array.isArray(data.academics) ? data.academics[0] || null : data.academics}
+              americasArticle={Array.isArray(data.migration) ? data.migration[0] || null : data.migration}
+              australiaArticle={Array.isArray(data.examAdmission) ? data.examAdmission[0] || null : data.examAdmission}
+              asiaArticle={Array.isArray(data.learningCareer) ? data.learningCareer[0] || null : data.learningCareer}
+              europeArticle={Array.isArray(data.scholarships) ? data.scholarships[0] || null : data.scholarships}
+              ukArticle={Array.isArray(data.studentLife) ? data.studentLife[0] || null : data.studentLife}
               allArticles={{
-                africaNews: Array.isArray(data.africaNews) ? data.africaNews : [],
-                americasNews: Array.isArray(data.americasNews) ? data.americasNews : [],
-                australiaNews: Array.isArray(data.australiaNews) ? data.australiaNews : [],
-                asiaNews: Array.isArray(data.asiaNews) ? data.asiaNews : [],
-                europeNews: Array.isArray(data.europeNews) ? data.europeNews : [],
-                ukNews: Array.isArray(data.ukNews) ? data.ukNews : [],
+                africaNews: Array.isArray(data.academics) ? data.academics : [],
+                americasNews: Array.isArray(data.migration) ? data.migration : [],
+                australiaNews: Array.isArray(data.examAdmission) ? data.examAdmission : [],
+                asiaNews: Array.isArray(data.learningCareer) ? data.learningCareer : [],
+                europeNews: Array.isArray(data.scholarships) ? data.scholarships : [],
+                ukNews: Array.isArray(data.studentLife) ? data.studentLife : [],
                 canadaNews: Array.isArray(data.canadaNews) ? data.canadaNews : []
               }}
             />
@@ -193,8 +175,8 @@ export default async function Home() {
       <SportsHub articles={data.sportsHub} />
       <EditorsPicks articles={data.editorsPicks} />
       <VibesNCruise articles={data.vibesNCruise} />
-            <DailyMaple articles={data.dailyMaple} />
-            <BookNook articles={data.bookNook} />
+            <BusinessEconomy articles={data.businessEconomy} />
+            <Finance articles={data.finance} />
           </div>
         </div>
       </main>

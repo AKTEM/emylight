@@ -1,38 +1,39 @@
-                  "use client";
+"use client";
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DollarSign, Clock, Eye, User, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { Leaf, Clock, Eye, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { TransformedPost } from '@/lib/wordpress';
 
-interface BookNookProps {
+interface DailyMapleProps {
   articles: TransformedPost[];
 }
 
-export const BookNook: React.FC<BookNookProps> = ({ articles }) => {
+export function BusinessEconomy({ articles }: DailyMapleProps) {
   const [showAll, setShowAll] = useState(false); // Default to "Show Less" mode
   const displayedArticles = showAll ? articles : articles.slice(0, 3);
 
   return (
     <section className="space-y-8">
       <div className="flex items-center space-x-3">
-        <DollarSign className="w-8 h-8 text-red-600" />
+        <Leaf className="w-8 h-8 text-red-600" />
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Finance
+          Business/Economy
         </h2>
         <div className="flex-1 h-1 bg-red-600 rounded-full ml-4"></div>
       </div>
 
-      <div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950 dark:to-yellow-950 rounded-xl p-6 mb-8">
+      <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 rounded-xl p-6 mb-8">
         <div className="text-center">
-          <DollarSign className="w-12 h-12 text-red-600 mx-auto mb-3" />
+          <Leaf className="w-12 h-12 text-red-600 mx-auto mb-3" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-           Money Matters
+            Where business meets opportunity
           </h3>
-          <p className="text-gray-600 dark:text-gray-300">
-           Smart money talk, saving hacks, crypto trends, and investment ideas to help you stay ahead.
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Get the latest updates on markets, startups, policies, and the economy. 
+            Stay informed with insights that shape business and financial decisions.
 
           </p>
         </div>
@@ -55,13 +56,12 @@ export const BookNook: React.FC<BookNookProps> = ({ articles }) => {
                 
                 <div className="absolute top-3 left-3 flex space-x-2">
                   <Badge className="bg-red-600 hover:bg-red-700 text-white">
-                    <DollarSign className="w-3 h-3 mr-1" />
-                   Finance
+                    <Leaf className="w-3 h-3 mr-1" />
+                     Business/Economy
                   </Badge>
                   {article.featured && (
-                    <Badge className="bg-amber-500 hover:bg-amber-600 text-white">
-                      <Star className="w-3 h-3 mr-1" />
-                      FEATURED
+                    <Badge className="bg-orange-500 hover:bg-orange-600 text-white">
+                      TODAY
                     </Badge>
                   )}
                   <Badge variant="secondary" className="bg-white/90 text-gray-900 hover:bg-white text-xs">
@@ -103,7 +103,7 @@ export const BookNook: React.FC<BookNookProps> = ({ articles }) => {
                   className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
                 >
                   <Link href={`/article/${article.slug}`}>
-                    Read Review
+                    Read Today's Business/Economy Posts
                   </Link>
                 </Button>
               </div>
@@ -112,12 +112,12 @@ export const BookNook: React.FC<BookNookProps> = ({ articles }) => {
         </div>
       ) : (
         <div className="text-center py-16">
-          <DollarSign className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <Leaf className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            No Finance Post Available
+            No Business/Economy Post Available
           </h3>
           <p className="text-gray-600 dark:text-gray-300">
-            Check back soon for Finance Posts and articles.
+            Check back soon for the latest Business/Economy Posts
           </p>
         </div>
       )}
@@ -130,7 +130,7 @@ export const BookNook: React.FC<BookNookProps> = ({ articles }) => {
               size="lg"
               className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 flex items-center space-x-2 mx-auto"
             >
-              <span>{showAll ? 'Show Less' : 'Explore BookNook'}</span>
+              <span>{showAll ? 'Show Less' : 'View All  Business/Economy contents'}</span>
               {showAll ? (
                 <ChevronUp className="w-5 h-5" />
               ) : (
@@ -150,4 +150,4 @@ export const BookNook: React.FC<BookNookProps> = ({ articles }) => {
       </div>
     </section>
   );
-};
+}

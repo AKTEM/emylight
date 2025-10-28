@@ -1,17 +1,17 @@
 "use client";
 
 import Link from 'next/link';
-import {
-  Zap,
-  Plane,
-  Trophy,
-  MapPin,
-  Heart,
-  GraduationCap,
-  Cpu,
-  DollarSign,
-  TrendingUp,
-  BookOpen,
+import { 
+  Zap, 
+  Clock, 
+  Globe, 
+  MapPin, 
+  Grid3X3, 
+  Calendar, 
+  Leaf, 
+  BookOpen, 
+  Camera, 
+  Headphones,
   Facebook,
   Twitter,
   Instagram,
@@ -30,14 +30,14 @@ const newsFeatures = [
   {
     id: 2,
     title: "Life After Japa",
-    icon: Plane,
+    icon: Clock,
     href: "/business",
     description: "Abroad: Stories & Tips"
   },
   {
     id: 3,
     title: "Sports",
-    icon: Trophy,
+    icon: Globe,
     href: "/sports",
     description: "Sport Activities"
   },
@@ -51,42 +51,42 @@ const newsFeatures = [
   {
     id: 5,
     title: "Health",
-    icon: Heart,
+    icon: Grid3X3,
     href: "/health",
     description: "Wellness & Healthy Living"
   },
   {
     id: 6,
     title: "Education",
-    icon: GraduationCap,
+    icon: Calendar,
     href: "/events",
     description: "Upcoming events"
   },
   {
     id: 7,
     title: "Tech/Gadget",
-    icon: Cpu,
+    icon: Leaf,
     href: "/entertainment",
     description: "Tech News, Gadget Reviews"
   },
   {
     id: 8,
     title: "Finance",
-    icon: DollarSign,
+    icon: BookOpen,
     href: "/booknook",
     description: "Money talks & Investment"
   },
   {
     id: 9,
     title: "Business/Economy",
-    icon: TrendingUp,
+    icon: Camera,
     href: "/daily-maple",
     description: "Business & Economy"
   },
   {
     id: 10,
     title: "Academics",
-    icon: BookOpen,
+    icon: Headphones,
     href: "/world/africa",
     description: "Educational Content"
   }

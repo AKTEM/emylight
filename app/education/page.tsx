@@ -1,6 +1,6 @@
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { WorldNews } from '@/components/world-news';
+import { Education } from '@/components/education';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Metadata } from 'next';
@@ -17,21 +17,21 @@ import {
 export const revalidate = 600;
 
 export const metadata: Metadata = {
-  title: 'Education - The Maple Epoch',
+  title: 'Education - EmyTrends',
   description: 'Explore educational opportunities, study abroad programs, academic insights, and learning resources from institutions worldwide.',
   alternates: {
-    canonical: 'https://www.mapleepoch.com/world',
+    canonical: 'https://www.emytrends.com/education',
   },
   openGraph: {
-    title: 'Education - The Maple Epoch',
+    title: 'Education - EmyTrends',
     description: 'Explore educational opportunities, study abroad programs, academic insights, and learning resources from institutions worldwide.',
-    url: 'https://www.mapleepoch.com/world',
-    siteName: 'The Maple Epoch',
+    url: 'https://www.emytrends.com/education',
+    siteName: 'EmyTrends',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Education - The Maple Epoch',
+    title: 'Education - EmyTrends',
     description: 'Explore educational opportunities, study abroad programs, academic insights, and learning resources from institutions worldwide.',
   },
 };
@@ -106,9 +106,9 @@ export default async function WorldPage() {
           </div>
         </div>
 
-        {/* World News Content */}
+        {/* Education Content */}
         <div className="container mx-auto px-4 py-12">
-          <WorldNews 
+          <Education
             africaArticle={data.africaNews[0] || null}
             americasArticle={data.americasNews[0] || null}
             australiaArticle={data.australiaNews[0] || null}
