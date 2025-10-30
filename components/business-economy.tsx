@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Clock, Eye, User, ChevronDown, ChevronUp } from 'lucide-react';
+import { Leaf, Clock, Eye, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { TransformedPost } from '@/lib/wordpress';
 
 interface DailyMapleProps {
@@ -18,7 +18,7 @@ export function BusinessEconomy({ articles }: DailyMapleProps) {
   return (
     <section className="space-y-8">
       <div className="flex items-center space-x-3">
-        <Briefcase className="w-8 h-8 text-red-600" />
+        <Leaf className="w-8 h-8 text-red-600" />
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
           Business/Economy
         </h2>
@@ -27,7 +27,7 @@ export function BusinessEconomy({ articles }: DailyMapleProps) {
 
       <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 rounded-xl p-6 mb-8">
         <div className="text-center">
-          <Briefcase className="w-12 h-12 text-red-600 mx-auto mb-3" />
+          <Leaf className="w-12 h-12 text-red-600 mx-auto mb-3" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
             Where business meets opportunity
           </h3>
@@ -56,7 +56,7 @@ export function BusinessEconomy({ articles }: DailyMapleProps) {
                 
                 <div className="absolute top-3 left-3 flex space-x-2">
                   <Badge className="bg-red-600 hover:bg-red-700 text-white">
-                    <Briefcase className="w-3 h-3 mr-1" />
+                    <Leaf className="w-3 h-3 mr-1" />
                      Business/Economy
                   </Badge>
                   {article.featured && (
@@ -112,7 +112,7 @@ export function BusinessEconomy({ articles }: DailyMapleProps) {
         </div>
       ) : (
         <div className="text-center py-16">
-          <Briefcase className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <Leaf className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
             No Business/Economy Post Available
           </h3>
